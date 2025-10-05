@@ -1,0 +1,571 @@
+/* General Styles */
+.analytics-dashboard {
+  background-color: #f9fafb;
+  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  background-color: transparent;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-tab:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.nav-tab.active {
+  background-color: #3b82f6;
+  color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  padding: 0;
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.dashboard-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Sections */
+.dashboard-section {
+  margin-bottom: 32px;
+}
+
+.section-header {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.metric-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  text-align: center;
+}
+
+.metric-card.highlight-card {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.metric-card.highlight-card .metric-label,
+.metric-card.highlight-card .metric-unit {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.metric-unit {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.status-card {
+  border-width: 2px;
+}
+
+/* Analysis Card */
+.analysis-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-top: 20px;
+}
+
+.analysis-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.analysis-points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analysis-point {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #374151;
+}
+
+.analysis-point .bullet {
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+/* Goals Section */
+.goals-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.goals-main-card, .goals-list-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.goals-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.goals-subtitle {
+  color: #6b7280;
+  margin: 0 0 24px 0;
+}
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.progress-bar-large {
+  flex-grow: 1;
+  height: 16px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-fill-large {
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 8px;
+}
+
+.progress-percentage {
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.goals-list-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goal-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.goal-icon {
+  font-size: 1.5rem;
+}
+
+.goal-content {
+  flex-grow: 1;
+}
+
+.goal-title {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+}
+
+.goal-description {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.goal-status {
+  font-size: 1.2rem;
+}
+
+/* Highlight Special Card */
+.highlight-special-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: white;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.rocket-icon {
+  font-size: 3rem;
+}
+
+.highlight-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.highlight-text {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Charts */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.chart-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.chart-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.chart-container {
+  height: 300px;
+}
+
+/* Badges */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.badge-card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.badge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.badge-name {
+  font-weight: 700;
+  color: #374151;
+}
+
+.badge-percentage {
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.badge-description {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* Heatmap */
+.heatmap-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.heatmap-header {
+  margin-bottom: 24px;
+}
+
+.heatmap-stats {
+  display: flex;
+  justify-content: space-around;
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.heatmap-stat {
+  text-align: center;
+}
+
+.heatmap-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.heatmap-label {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.heatmap-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heatmap-months {
+  display: flex;
+  gap: 3px; /* Match cell gap */
+  padding-left: 30px; /* Align with days column */
+  margin-bottom: 4px;
+}
+
+.heatmap-month {
+  width: calc(15px * 4.3); /* Approx 4.3 weeks in a month */
+  text-align: center;
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.heatmap-body {
+  display: flex;
+  gap: 5px;
+}
+
+.heatmap-days-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #6b7280;
+  padding-top: 15px; /* Align with cells */
+  padding-bottom: 15px;
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(53, 15px);
+  grid-template-rows: repeat(7, 15px);
+  grid-auto-flow: column;
+  gap: 3px;
+}
+
+.heatmap-cell {
+  width: 15px;
+  height: 15px;
+  background-color: #ebedf0;
+  border-radius: 3px;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.legend-colors {
+  display: flex;
+  gap: 3px;
+}
+
+.legend-color {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+}
+
+.activity-insights {
+  margin-top: 24px;
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.insights-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.insight-item {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* Tips Card */
+.tips-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.tips-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.tips-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.tip-icon {
+  font-size: 1.2rem;
+}
+
+/* Upcoming Contests on Analytics Page */
+.contests-list-analytics {
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.contest-item-analytics {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.contest-item-analytics:last-child {
+  border-bottom: none;
+}
+
+.contest-info-analytics .contest-name-analytics {
+  margin: 0;
+  font-weight: 600;
+  color: #374151;
+}
+
+.contest-info-analytics .contest-time-analytics {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.contest-duration-analytics {
+  font-weight: 600;
+  background-color: #f3f4f6;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
