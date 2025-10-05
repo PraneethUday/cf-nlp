@@ -1,0 +1,118 @@
+Perfect 👍 — you’ve uploaded **three key Codeforces API reference files**:
+
+* **cf-api.txt** → API intro + authentication details
+* **methords.txt** → all available API endpoints (methods)
+* **return-objects.txt** → structures of returned JSON objects (User, Submission, Problem, RatingChange, etc.)
+
+Now, based on your goal —
+you want to **build a “Codeforces Analytics Pro Dashboard”** that tracks **streaks, submissions, tags, ratings, success rate, productivity**, etc. — here’s the **exact API strategy + prompt plan** you can use.
+
+---
+
+## 🎯 Main Dashboard Goals → Corresponding API Methods
+
+| Dashboard Feature                                                      | What You’re Showing                                     | API Method(s)                         | Return Object(s)                 | Use / Derived Metrics                                                |
+| ---------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------- | -------------------------------- | -------------------------------------------------------------------- |
+| 👤 **Profile Header (Handle, Rating, Max Rating, Rank, Contribution)** | “@jrgk, Specialist, Rating: 1501, Max Rating: 1529”     | `user.info?handles=jrgk`              | `User`                           | Basic profile info, rating tier, join date                           |
+| 🧮 **Contest Rating History**                                          | “Rating progress graph, 1501 current, 1529 max”         | `user.rating?handle=jrgk`             | `RatingChange[]`                 | Extract contest dates, newRating, oldRating                          |
+| 📅 **Consistency Index / Weekly Activity**                             | “Current Streak, Longest Streak, Active Weeks”          | `user.status?handle=jrgk`             | `Submission[]`                   | Group `creationTimeSeconds` by ISO week → find active weeks, streaks |
+| 📊 **Performance Metrics**                                             | “Avg ACs per week, Most productive week, Activity rate” | `user.status`                         | `Submission[]`                   | Count `verdict == OK` per week                                       |
+| 🏷️ **Problem Tags Distribution**                                      | “Problem tags (dp, graphs, math, etc.) pie chart”       | `user.status` + `problemset.problems` | `Submission[]` + `Problem`       | Match solved problems to tags                                        |
+| 🧩 **Success Rate**                                                    | “98 solved / 186 attempts → 52.7%”                      | `user.status`                         | `Submission[]`                   | OK / total submissions                                               |
+| 🔥 **Submission Heatmap**                                              | “Activity heatmap across months”                        | `user.status`                         | `Submission[]`                   | Convert `creationTimeSeconds → date`, count per day/week             |
+| 🏅 **Profile Badges (like Consistent Coder, Contest Warrior)**         | “Based on activity milestones”                          | Combine `user.status` + `user.rating` | `Submission[]`, `RatingChange[]` | Logic-based achievements (e.g., >5-week streak → Consistent Coder)   |
+| 🧠 **Streak Analysis (dry spells, most active week)**                  | “Current streak: 7 weeks, Dry spells: 2”                | `user.status`                         | `Submission[]`                   | Group by week; detect gaps                                           |
+| ⚡ **Rating Climber (difference between old & new ratings)**            | “+28 points away from peak”                             | `user.rating`                         | `RatingChange[]`                 | Compare last vs max rating                                           |
+| 📈 **Contest Participation Stats**                                     | “Participated in 11 contests”                           | `user.rating`                         | `RatingChange[]`                 | Length of list = contests count                                      |
+
+---
+
+## 🧠 Example Prompt to Give to AI (to Generate Dashboard Data Logic)
+
+You can give this **master prompt** to your AI or backend code generator:
+
+---
+
+**Prompt:**
+
+> “Using the Codeforces API, create a backend data pipeline for user analytics.
+>
+> **Goal:** Generate a full JSON object summarizing a user’s Codeforces activity for a dashboard.
+> Use the following API endpoints:
+>
+> * `user.info?handles=<handle>` → for basic info
+> * `user.rating?handle=<handle>` → for contest rating trends
+> * `user.status?handle=<handle>` → for all submissions (verdict, problem, tags, timestamps)
+> * Optionally, `problemset.problems` → to map problem tags if needed.
+>
+> **From these responses, compute:**
+>
+> * Total submissions
+> * Solved (OK) count
+> * Success rate = solved / total
+> * Active weeks count
+> * Current streak (continuous active weeks up to now)
+> * Longest streak
+> * Most productive week (max solves)
+> * Average ACs per active week
+> * Activity rate = active_weeks / total_weeks_since_join
+> * Rating summary (current, max, difference)
+> * Contest participation count
+> * Problem tag distribution (based on tags of solved problems)
+> * Badges:
+>
+>   * “Consistent Coder” → streak ≥ 4
+>   * “Speed Demon” → >50 problems in a week
+>   * “Never Give Up” → >150 total attempts
+>
+> **Output format:**
+>
+> ```json
+> {
+>   "profile": {...},
+>   "rating_trend": [...],
+>   "consistency": {...},
+>   "performance": {...},
+>   "tags": {...},
+>   "badges": {...},
+>   "heatmap": [...]
+> }
+> ```
+>
+> Use Codeforces API endpoints efficiently (respecting rate limits).”
+
+---
+
+## ⚙️ Suggested Query Flow (for backend or script)
+
+1. **Fetch base data:**
+
+   * `GET /api/user.info?handles=jrgk`
+   * `GET /api/user.status?handle=jrgk`
+   * `GET /api/user.rating?handle=jrgk`
+
+2. **Process client-side or backend-side:**
+
+   * Parse timestamps into weekly buckets.
+   * Count OK verdicts per week.
+   * Compute streaks and dry spells.
+   * Generate activity ratio and averages.
+   * Join problem tags if needed via `problemset.problems`.
+
+3. **Cache results** (since Codeforces limits to 1 call/2 seconds).
+
+---
+
+## 💡 Example “CF Dashboard Data Pipeline Prompt” (for code generation)
+
+> “Generate a Python/Node.js function that fetches from Codeforces API:
+>
+> * `user.info`, `user.rating`, and `user.status`
+>   Then computes:
+> * Active weeks, streaks, productivity, success rate, rating stats, and problem tags.
+>   Return a summarized JSON structure for dashboard visualization.”
+
+---
+
+Would you like me to give you **the exact prompt structured for AI code generator (like for a backend or Langflow node)** — that automatically fetches and builds this JSON from Codeforces API?
+I can tailor it for **Python FastAPI**, **Next.js server**, or **Langflow block** depending on what you’re building.
