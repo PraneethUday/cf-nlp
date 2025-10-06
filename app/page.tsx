@@ -50,7 +50,6 @@ export default function HomePage() {
         fetchProblemDifficulty(handle),
       ]);
       setProfile(p); setUpcoming(up); setRatings(rh); setSubs(s); setDiff(d);
-      // Fire and forget insights
       fetch('/api/insights', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ profile: p, ratings: rh, submissions: s, difficulty: d }) })
         .then(r => r.json())
         .then(j => setInsights(j.insights))
@@ -58,6 +57,32 @@ export default function HomePage() {
     } catch (e: any) { setError(e.message || 'Failed'); }
     finally { setLoading(false); }
   }
+
+  const getRatingColor = (rating: number) => {
+    if (rating < 1200) return '#808080';
+    if (rating < 1400) return '#008000';
+    if (rating < 1600) return '#03a89e';
+    if (rating < 1900) return '#0000ff';
+    if (rating < 2100) return '#a0a';
+    if (rating < 2300) return '#ff8c00';
+    if (rating < 2400) return '#ff8c00';
+    if (rating < 2600) return '#ff0000';
+    if (rating < 3000) return '#ff0000';
+    return '#ff0000';
+  };
+
+  const getRatingTitle = (rating: number) => {
+    if (rating < 1200) return 'newbie';
+    if (rating < 1400) return 'pupil';
+    if (rating < 1600) return 'specialist';
+    if (rating < 1900) return 'expert';
+    if (rating < 2100) return 'candidate master';
+    if (rating < 2300) return 'master';
+    if (rating < 2400) return 'international master';
+    if (rating < 2600) return 'grandmaster';
+    if (rating < 3000) return 'international grandmaster';
+    return 'legendary grandmaster';
+  };
 
   const ratingChart = useMemo(() => {
     if (!ratings) return null;
@@ -84,12 +109,34 @@ export default function HomePage() {
   const verdictPie = useMemo(() => {
     if (!subs) return null;
     const entries = Object.entries(subs.verdictCounts);
-    const colors = ['var(--success-color)', 'var(--danger-color)', 'var(--warning-color)', '#8b5cf6', 'var(--accent-color)', '#f97316', '#84cc16'];
+    const verdicts = entries.map(([k]) => k);
+    
+    const semanticColors: { [key: string]: string } = {
+      'OK': 'var(--success-color)',
+      'WRONG_ANSWER': 'var(--danger-color)',
+      'TIME_LIMIT_EXCEEDED': 'var(--warning-color)',
+      'COMPILATION_ERROR': '#6b7280',
+      'RUNTIME_ERROR': '#f97316',
+    };
+
+    const colorList: string[] = [];
+    let hue = 0;
+    const hueStep = 360 / (verdicts.length - Object.keys(semanticColors).filter(k => verdicts.includes(k)).length + 1);
+
+    verdicts.forEach(verdict => {
+      if (semanticColors[verdict]) {
+        colorList.push(semanticColors[verdict]);
+      } else {
+        hue = (hue + hueStep) % 360;
+        colorList.push(`hsl(${hue}, 70%, 50%)`);
+      }
+    });
+
     return { 
-      labels: entries.map(([k]) => k), 
+      labels: verdicts, 
       datasets: [{ 
         data: entries.map(([, v]) => v),
-        backgroundColor: colors.slice(0, entries.length),
+        backgroundColor: colorList,
         borderWidth: 2,
         borderColor: 'var(--bg-primary)',
         hoverOffset: 10
@@ -101,7 +148,13 @@ export default function HomePage() {
     if (!diff) return null;
     const labels = ['<1100', '1100–1399', '1400–1699', '1700–1999', '≥2000'];
     const data = [diff.buckets.lt1100, diff.buckets['1100_1399'], diff.buckets['1400_1699'], diff.buckets['1700_1999'], diff.buckets.ge2000];
-    const colors = ['var(--accent-color)', 'var(--success-color)', 'var(--warning-color)', '#f97316', 'var(--danger-color)'];
+    const colors = [
+      getRatingColor(1000),
+      getRatingColor(1200),
+      getRatingColor(1400),
+      getRatingColor(1700),
+      getRatingColor(2100),
+    ];
     return { 
       labels, 
       datasets: [{ 
@@ -113,32 +166,6 @@ export default function HomePage() {
       }] 
     };
   }, [diff]);
-
-  const getRatingColor = (rating: number) => {
-    if (rating < 1200) return '#808080'; // Newbie - Gray
-    if (rating < 1400) return '#008000'; // Pupil - Green
-    if (rating < 1600) return '#03a89e'; // Specialist - Cyan
-    if (rating < 1900) return '#0000ff'; // Expert - Blue
-    if (rating < 2100) return '#aa00aa'; // Candidate Master - Purple
-    if (rating < 2300) return '#ff8c00'; // Master - Orange
-    if (rating < 2400) return '#ff8c00'; // International Master - Orange
-    if (rating < 2600) return 'var(--danger-color)'; // Grandmaster - Red
-    if (rating < 3000) return 'var(--danger-color)'; // International Grandmaster - Red
-    return 'var(--danger-color)'; // Legendary Grandmaster - Red
-  };
-
-  const getRatingTitle = (rating: number) => {
-    if (rating < 1200) return 'newbie';
-    if (rating < 1400) return 'pupil';
-    if (rating < 1600) return 'specialist';
-    if (rating < 1900) return 'expert';
-    if (rating < 2100) return 'candidate master';
-    if (rating < 2300) return 'master';
-    if (rating < 2400) return 'international master';
-    if (rating < 2600) return 'grandmaster';
-    if (rating < 3000) return 'international grandmaster';
-    return 'legendary grandmaster';
-  };
 
   if (!analysisStarted) {
     return (
@@ -177,7 +204,6 @@ export default function HomePage() {
 
       {error && <div className="card error-card">❌ Error: {error}</div>}
 
-      {/* Profile Summary */}
       <section className="card fade-in">
         <h2>👤 Profile Overview</h2>
         {!profile ? <div className="muted">🔍 No profile data available</div> : (
@@ -222,7 +248,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Upcoming Contests */}
       <section className="card fade-in">
         <h2>🏁 Upcoming Contests</h2>
         {!upcoming?.length ? <div className="muted">📅 No upcoming contests scheduled</div> : (
@@ -247,7 +272,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Rating History */}
       <section className="card">
         <h2>📈 Rating Journey</h2>
         {ratings && (
@@ -287,11 +311,11 @@ export default function HomePage() {
                     },
                     scales: {
                       y: {
-                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
                         ticks: { color: 'var(--text-secondary)' }
                       },
                       x: {
-                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
                         ticks: { color: 'var(--text-secondary)' }
                       }
                     }
@@ -332,7 +356,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Problem Rating Distribution & Difficulty Analysis */}
       <section className="card">
         <h2>🎯 Problem Difficulty Breakdown</h2>
         {diff && (
@@ -370,7 +393,7 @@ export default function HomePage() {
                     },
                     scales: {
                       y: {
-                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
                         ticks: { color: 'var(--text-secondary)' }
                       },
                       x: {
@@ -387,59 +410,104 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Submission Overview */}
-      <section className="card">
-        <h2>📊 Submission Analytics</h2>
-        {subs && (
-          <div className="grid grid-2">
-            <div className="grid grid-3">
-              <div className="stat-card">
-                <div className="stat-value" style={{ color: 'var(--primary-color)' }}>{subs.total}</div>
-                <div className="stat-label">📤 Total Submissions</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value" style={{ color: 'var(--success-color)' }}>{subs.accepted}</div>
-                <div className="stat-label">✅ Accepted</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value" style={{ color: subs.total && (subs.accepted / subs.total) > 0.5 ? 'var(--success-color)' : 'var(--warning-color)' }}>
-                  {subs.total ? `${Math.round(100 * subs.accepted / subs.total)}%` : '-'}
-                </div>
-                <div className="stat-label">🎯 Success Rate</div>
-              </div>
-            </div>
-            {verdictPie && (
-              <div className="chart-container">
-                <Doughnut 
-                  data={verdictPie} 
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        position: 'bottom',
-                        labels: {
-                          padding: 20,
-                          usePointStyle: true,
-                          font: { size: 12, weight: 'bold' }
-                        }
-                      },
-                      tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff'
-                      }
-                    },
-                    cutout: '60%'
-                  }}
-                  height={200}
-                />
-              </div>
-            )}
+<section className="card">
+  <h2>📊 Submission Analytics</h2>
+  {subs && (
+    <div className="grid grid-2">
+      <div className="grid grid-3">
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: 'var(--primary-color)' }}>
+            {subs.total}
           </div>
-        )}
-      </section>
-      {/* Performance Statistics */}
+          <div className="stat-label">📤 Total Submissions</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value" style={{ color: 'var(--success-color)' }}>
+            {subs.accepted}
+          </div>
+          <div className="stat-label">✅ Accepted</div>
+        </div>
+        <div className="stat-card">
+          <div
+            className="stat-value"
+            style={{
+              color:
+                subs.total && subs.accepted / subs.total > 0.5
+                  ? 'var(--success-color)'
+                  : 'var(--warning-color)'
+            }}
+          >
+            {subs.total ? `${Math.round((100 * subs.accepted) / subs.total)}%` : '-'}
+          </div>
+          <div className="stat-label">🎯 Success Rate</div>
+        </div>
+      </div>
+
+      {verdictPie && (
+        <div className="chart-container">
+          <Doughnut
+            data={{
+              ...verdictPie,
+              datasets: verdictPie.datasets.map(ds => {
+                const baseColors = [
+                  '#4CAF50',
+                  '#2196F3',
+                  '#FF9800',
+                  '#F44336',
+                  '#9C27B0',
+                  '#00BCD4',
+                  '#8BC34A',
+                  '#FFC107',
+                  '#795548',
+                  '#607D8B'
+                ];
+
+                const extraColors = Array.from(
+                  { length: Math.max(0, ds.data.length - baseColors.length) },
+                  () =>
+                    `hsl(${Math.floor(Math.random() * 360)}, 70%, 55%)`
+                );
+
+                return {
+                  ...ds,
+                  backgroundColor: [...baseColors, ...extraColors].slice(
+                    0,
+                    ds.data.length
+                  ),
+                  borderColor: '#fff',
+                  borderWidth: 2
+                };
+              })
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    padding: 20,
+                    usePointStyle: true,
+                    font: { size: 12, weight: 'bold' },
+                    color: 'var(--text-secondary)'
+                  }
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                  titleColor: '#fff',
+                  bodyColor: '#fff'
+                }
+              },
+              cutout: '60%'
+            }}
+            height={200}
+          />
+        </div>
+      )}
+    </div>
+  )}
+</section>
+
       {profile && ratings && subs && (
         <section className="card">
           <h2>⚡ Performance Dashboard</h2>
@@ -486,9 +554,6 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Future Features Preview */}
-
-      {/* Footer */}
       <footer>
       </footer>
     </main>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
-import { GoogleGenAI } from '@google/genai';   // ✅ correct import for new SDK
+import { GoogleGenAI } from '@google/genai';
 
 export async function POST(request: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -15,7 +15,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'HTML content is required' }, { status: 400 });
     }
 
-    // --- Run Python HTML parser ---
     const parsedHtml = await new Promise<string>((resolve, reject) => {
       const pythonScriptPath = path.resolve(
         process.cwd(),
@@ -46,13 +45,11 @@ export async function POST(request: Request) {
       pythonProcess.stdin.write(htmlContent);
       pythonProcess.stdin.end();
     });
-    // --- End parser ---
 
-    // --- Call Gemini API (GA client) ---
     const client = new GoogleGenAI({ apiKey });
 
     const response = await client.models.generateContent({
-      model: 'gemini-2.5-flash',   // ✅ or "gemini-2.5-pro" if you prefer quality over speed
+      model: 'gemini-2.5-flash',
       contents: `Analyze the following text from a Codeforces analytics page and provide insights about the user's profile. Focus on strengths, weaknesses, and improvement areas. Keep it concise and expert-like. Text: ${parsedHtml}`
     });
 

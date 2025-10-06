@@ -31,10 +31,9 @@ export default function Welcome({
         {/* Left: Insights */}
         <div className="welcome-card">
           <div className="welcome-header">
-            <div className="welcome-icon">🌿</div>
-            <h1 className="welcome-title">CFinsights</h1>
+            <h1 className="welcome-title">🚀🚀🚀Codeforces Insights🚀🚀🚀</h1>
             <p className="welcome-subtitle">
-              Your one stop solution for all things CF
+              Your one stop solution for all things Codeforces
             </p>
           </div>
 

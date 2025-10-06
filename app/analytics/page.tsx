@@ -19,7 +19,6 @@ const AnalyticsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Real CF data states
   const [profile, setProfile] = useState<any>(null);
   const [ratings, setRatings] = useState<any>(null);
   const [submissions, setSubmissions] = useState<any>(null);
@@ -46,7 +45,6 @@ const AnalyticsPage = () => {
     loadUpcoming();
   }, []);
 
-  // Load real CF data
   async function loadRealData() {
     if (!handle.trim()) {
       setError('Please enter a Codeforces handle.');
@@ -71,11 +69,9 @@ const AnalyticsPage = () => {
       setSubmissions(submissionsData);
       setDifficulty(difficultyData);
       
-      // Add this line to calculate and set daily activity
       const daily = await calculateDailyActivity(handle);
       setDailyActivity(daily);
 
-      // Compute analytics from real data with async weekly activity
       const realAnalytics = await computeAnalyticsFromRealData(profileData, ratingsData, submissionsData, difficultyData);
       setData(realAnalytics);
       
@@ -88,15 +84,11 @@ const AnalyticsPage = () => {
     }
   }
 
-  // Compute analytics from real CF API data
   async function computeAnalyticsFromRealData(profileData: any, ratingsData: any, submissionsData: any, difficultyData: any) {
-    // Calculate weekly consistency from actual submission data
     const weeklyActivity = await calculateWeeklyActivity(handle);
     
-    // Calculate streaks and consistency metrics
     const consistencyMetrics = calculateConsistencyMetrics(weeklyActivity);
     
-    // Extract problem tags from submissions (simplified)
     const problemTags = extractProblemTags(submissionsData);
     
     return {
@@ -104,7 +96,7 @@ const AnalyticsPage = () => {
         currentStreak: consistencyMetrics.currentStreak,
         longestStreak: consistencyMetrics.longestStreak,
         activeWeeks: consistencyMetrics.activeWeeks,
-        totalWeeks: 26, // Last 6 months
+        totalWeeks: 26,
         status: consistencyMetrics.status,
         drySpells: consistencyMetrics.drySpells
       },
@@ -120,7 +112,6 @@ const AnalyticsPage = () => {
     };
   }
 
-  // Helper to calculate daily activity for heatmap
   async function calculateDailyActivity(handle: string): Promise<number[]> {
     const cf = (await import('@/lib/cf/client')).cf;
     const submissions = await cf('user.status', { handle, from: 1, count: 10000 });
@@ -141,24 +132,19 @@ const AnalyticsPage = () => {
     return dailyData;
   }
 
-  // Helper functions for analytics computation
   async function calculateWeeklyActivity(handle: string): Promise<number[]> {
-    // Get actual submissions from CF API
     const cf = (await import('@/lib/cf/client')).cf;
     const submissions = await cf('user.status', { handle, from: 1, count: 10000 });
     
-    // Calculate weekly activity from actual submission dates
     const weeklyData = Array(26).fill(0);
     const now = dayjs();
     
-    // Group submissions by week
     submissions.forEach((submission: any) => {
       const submissionDate = dayjs.unix(submission.creationTimeSeconds);
       const weeksAgo = Math.floor(now.diff(submissionDate, 'week'));
       
-      // Only count submissions from last 26 weeks
       if (weeksAgo >= 0 && weeksAgo < 26) {
-        const weekIndex = 25 - weeksAgo; // Most recent week at index 25
+        const weekIndex = 25 - weeksAgo;
         weeklyData[weekIndex]++;
       }
     });
@@ -174,7 +160,6 @@ const AnalyticsPage = () => {
     let drySpells = 0;
     let maxWeeklySubmissions = 0;
     
-    // Calculate from the end (most recent)
     for (let i = weeklyActivity.length - 1; i >= 0; i--) {
       const activity = weeklyActivity[i];
       maxWeeklySubmissions = Math.max(maxWeeklySubmissions, activity);
@@ -213,7 +198,6 @@ const AnalyticsPage = () => {
   }
 
   function extractProblemTags(submissionsData: any) {
-    // Simplified problem tags - in real implementation, you'd parse from submissions
     return {
       implementation: Math.floor(submissionsData.accepted * 0.3),
       greedy: Math.floor(submissionsData.accepted * 0.25),
@@ -314,10 +298,8 @@ const AnalyticsPage = () => {
     setInsightsLoading(true);
     setInsights(null);
     try {
-      // 1. Get the HTML of the current page
       const htmlContent = document.documentElement.outerHTML;
 
-      // 2. Send it to our new API route
       const response = await fetch('/api/insights', {
         method: 'POST',
         headers: {
@@ -343,7 +325,6 @@ const AnalyticsPage = () => {
   return (
     <div className="analytics-dashboard">
       <div className="dashboard-content">
-        {/* Header */}
         <div className="dashboard-header">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
             <a 
@@ -501,7 +482,6 @@ const AnalyticsPage = () => {
             </button>
           </div>
         </section>
-            {/* Consistency Index Section */}
             <section className="dashboard-section">
             
           <div className="section-header">
@@ -535,7 +515,6 @@ const AnalyticsPage = () => {
             </div>
           </div>
 
-          {/* Streak Analysis */}
           <div className="analysis-card">
             <h3 className="analysis-title">📊 Streak Analysis</h3>
             <div className="analysis-points">
@@ -555,7 +534,6 @@ const AnalyticsPage = () => {
           </div>
         </section>
 
-        {/* Performance Section */}
         <section className="dashboard-section">
           <div className="section-header">
             <h2 className="section-title">⚡ Performance Metrics</h2>
@@ -579,7 +557,6 @@ const AnalyticsPage = () => {
           </div>
         </section>
 
-        {/* Consistency Goals */}
         <section className="dashboard-section">
           <div className="section-header">
             <h2 className="section-title">🎯 Consistency Goals</h2>
@@ -636,7 +613,6 @@ const AnalyticsPage = () => {
             </div>
           </div>
         </section>
-        {/* Most Productive Week Highlight */}
         <section className="dashboard-section">
           <div className="highlight-special-card">
             <div className="rocket-icon">🚀</div>
@@ -647,7 +623,6 @@ const AnalyticsPage = () => {
           </div>
         </section>
 
-        {/* Charts Section */}
         <section className="dashboard-section">
           <div className="charts-grid">
             <div className="chart-card">
@@ -708,7 +683,6 @@ const AnalyticsPage = () => {
           </div>
         </section>
 
-        {/* Badges Progress */}
         <section className="dashboard-section">
           <div className="section-header">
             <h2 className="section-title">🏅 Profile Badges Progress</h2>
@@ -736,7 +710,6 @@ const AnalyticsPage = () => {
           </div>
         </section>
 
-        {/* Submission Activity Heatmap */}
         <section className="dashboard-section">
           <div className="section-header">
             <h2 className="section-title">🔥 Submission Activity Heatmap</h2>
@@ -830,7 +803,6 @@ const AnalyticsPage = () => {
           </div>
         </section>
 
-        {/* Strategy Tips */}
         <section className="dashboard-section">
           <div className="tips-card">
             <h3 className="tips-title">💡 Strategy Tips</h3>
@@ -864,7 +836,6 @@ const AnalyticsPage = () => {
             </div>
           </div>
         </section>
-        {/* AI Insights Section */}
         </>
         )}
       </div>

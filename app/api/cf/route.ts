@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
     return new Response(JSON.stringify({ error: 'Missing method' }), { status: 400 });
   }
 
-  // Enforce 1 request per 2 seconds to respect CF limits for server credentials
   const now = Date.now();
   const elapsed = now - lastCallTs;
   const minIntervalMs = 2000;
